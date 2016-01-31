@@ -4,7 +4,7 @@ Chat bot, gives informations about FIXME's services.
 
 ## Example
 
-![Example screenshot](http://i.imgur.com/0SNthS4.png)
+![Example screenshot](http://i.imgur.com/0SNthS4.png?1)
 
 ## Build
 
