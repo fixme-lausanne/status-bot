@@ -1,4 +1,4 @@
-# status-bot
+# status-bot [![Circle CI](https://circleci.com/gh/fixme-lausanne/status-bot.svg?style=svg)](https://circleci.com/gh/fixme-lausanne/status-bot)
 
 Check status of foo.fixme.ch from outside and inform us when something doesn't work.
 
