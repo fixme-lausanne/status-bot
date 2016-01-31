@@ -1,6 +1,8 @@
 machine:
   java:
     version: oraclejdk8
+  environment:
+    SLACK_API_TOKEN: "XXX-XXXXXXXXXXXXX"
 
 dependencies:
   pre:
@@ -11,5 +13,4 @@ dependencies:
 
 test:
   override:
-    - boot run-tests
     - boot build
