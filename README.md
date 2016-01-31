@@ -1,6 +1,10 @@
 # status-bot [![Circle CI](https://circleci.com/gh/fixme-lausanne/status-bot.svg?style=svg)](https://circleci.com/gh/fixme-lausanne/status-bot)
 
-Check status of foo.fixme.ch from outside and inform us when something doesn't work.
+Chat bot, gives informations about FIXME's services.
+
+## Example
+
+![Example screenshot](http://i.imgur.com/0SNthS4.png)
 
 ## Build
 
