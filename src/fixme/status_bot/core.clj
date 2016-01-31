@@ -21,6 +21,24 @@
        (format "\n[Exit code] %s\n[Output]\n%s\n[Error]\n%s"
                exit out err)})))
 
+(defaction status-foo-action
+  "Gives status of services on foo.fixme.ch"
+  #"status"
+  (fn [_ _]
+    (let [ping (= 0 (:exit (sh "ping" "-c" "3" "foo.fixme.ch")))
+          curl-http (= 0 (:exit (sh "curl" "http://foo.fixme.ch")))
+          curl-https (= 0 (:exit (sh "curl" "https://foo.fixme.ch")))
+          curl-google (= 0 (:exit (sh "curl" "http://google.com")))
+          services [{:service "ping foo.fixme.ch" :ok? ping}
+                    {:service "http://foo.fixme.ch" :ok? curl-http}
+                    {:service "https://foo.fixme.ch" :ok? curl-https}]]
+      {:message
+       (apply str "Services status:\n"
+         (map #(format "%s\t%s\n"
+                       (if (:ok? %) ":white_check_mark:" ":x:")
+                       (:service %))
+           services))})))
+
 (defaction help-action
   "Display help"
   #"help"
@@ -39,7 +57,8 @@
     (make-bot {:name "status_bot"
                :actions [hello-action
                          help-action
-                         ping-foo-action]
+                         ping-foo-action
+                         status-foo-action]
                :adapters [(SlackAdapter. slack-token)]})))
 
 ;; Entry points
