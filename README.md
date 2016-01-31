@@ -33,7 +33,7 @@ To manually run the bot:
 
 ```
 export SLACK_API_TOKEN=XXX-XXXXXXXXXXXXX
-java $JVM_OPTS -cp target/manny-0.1.0-SNAPSHOT.jar clojure.main -m aztrana.manny.core
+java -jar target/status-bot-0.1.0-SNAPSHOT.jar
 ```
 
 For a systemd unit, see the file [status-bot.service](https://github.com/fixme-lausanne/status-bot/blob/master/status-bot.service).
