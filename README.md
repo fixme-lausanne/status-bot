@@ -36,4 +36,4 @@ export SLACK_API_TOKEN=XXX-XXXXXXXXXXXXX
 java $JVM_OPTS -cp target/manny-0.1.0-SNAPSHOT.jar clojure.main -m aztrana.manny.core
 ```
 
-For an init script, see [there](https://git.fixme.ch/org/FIXME/init-scripts).
+For a systemd unit, see the file [status-bot.service](https://github.com/fixme-lausanne/status-bot/blob/master/status-bot.service).

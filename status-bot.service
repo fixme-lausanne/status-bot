@@ -1,0 +1,19 @@
+# /etc/systemd/system/status-bot.service
+[Unit]
+Description=StatusBot
+StopWhenUnneeded=true
+
+[Service]
+User=statusbot
+WorkingDirectory=/home/statusbot
+EnvironmentFile=/home/statusbot/ENVS
+ExecStart=/usr/bin/java -jar status-bot.jar
+Restart=always
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=%n
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
