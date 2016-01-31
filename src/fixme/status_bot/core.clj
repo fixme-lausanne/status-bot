@@ -14,9 +14,18 @@
 
 (defaction ping-foo-action
   "Ping foo.fixme.ch"
-  #"ping"
+  #"ping foo"
   (fn [_ _]
     (let [{:keys [exit out err]} (sh "ping" "-c" "3" "foo.fixme.ch")]
+      {:message
+       (format "\n[Exit code] %s\n[Output]\n%s\n[Error]\n%s"
+               exit out err)})))
+
+(defaction ping-router-action
+  "Ping router (62.220.131.170)"
+  #"ping router"
+  (fn [_ _]
+    (let [{:keys [exit out err]} (sh "ping" "-c" "3" "62.220.131.170")]
       {:message
        (format "\n[Exit code] %s\n[Output]\n%s\n[Error]\n%s"
                exit out err)})))
@@ -26,10 +35,13 @@
   #"status"
   (fn [_ _]
     (let [ping (= 0 (:exit (sh "ping" "-c" "3" "foo.fixme.ch")))
+          ping-router (= 0 (:exit (sh "ping" "-c" "3" "62.220.131.170")))
           curl-http (= 0 (:exit (sh "curl" "http://foo.fixme.ch")))
           curl-https (= 0 (:exit (sh "curl" "https://foo.fixme.ch")))
           curl-google (= 0 (:exit (sh "curl" "http://google.com")))
-          services [{:service "ping foo.fixme.ch" :ok? ping}
+          services [{:service "ping router (62.220.131.170)"
+                     :ok? ping-router}
+                    {:service "ping foo.fixme.ch" :ok? ping}
                     {:service "http://foo.fixme.ch" :ok? curl-http}
                     {:service "https://foo.fixme.ch" :ok? curl-https}]]
       {:message
@@ -58,6 +70,7 @@
                :actions [hello-action
                          help-action
                          ping-foo-action
+                         ping-router-action
                          status-foo-action]
                :adapters [(SlackAdapter. slack-token)]})))
 
