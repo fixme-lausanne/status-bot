@@ -39,12 +39,20 @@
           curl-http (= 0 (:exit (sh "curl" "http://foo.fixme.ch")))
           curl-https (= 0 (:exit (sh "curl" "https://foo.fixme.ch")))
           curl-gogs (= 0 (:exit (sh "curl" "https://git.fixme.ch")))
+          curl-pad (= 0 (:exit (sh "curl" "https://pad.fixme.ch")))
+          curl-wiki (= 0 (:exit (sh "curl" "https://wiki.fixme.ch")))
+          curl-trigger (= 0 (:exit (sh "curl" "https://trigger.fixme.ch")))
+          curl-mpd (= 0 (:exit (sh "curl" "https://mpd.fixme.ch")))
           services [{:service "ping router (62.220.131.170)"
                      :ok? ping-router}
                     {:service "ping foo.fixme.ch" :ok? ping}
                     {:service "http://foo.fixme.ch" :ok? curl-http}
                     {:service "https://foo.fixme.ch" :ok? curl-https}
-                    {:service "https://git.fixme.ch" :ok? curl-gogs}]]
+                    {:service "https://git.fixme.ch" :ok? curl-gogs}
+                    {:service "https://pad.fixme.ch" :ok? curl-pad}
+                    {:service "https://wiki.fixme.ch" :ok? curl-wiki}
+                    {:service "https://trigger.fixme.ch" :ok? curl-trigger}
+                    {:service "https://mpd.fixme.ch" :ok? curl-mpd}]]
       {:message
        (apply str "Services status:\n"
          (map #(format "%s\t%s\n"
