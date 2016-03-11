@@ -1,12 +1,12 @@
 (set-env!
  :source-paths #{"src"}
- :dependencies '[[dgellow/bottle "0.1.0-SNAPSHOT"]
+ :dependencies '[[dgellow/bottle "0.1.1-SNAPSHOT"]
                  [environ "1.0.1"]
                  [com.taoensso/timbre "4.1.4"]
                  [org.clojure/clojure "1.7.0"]])
 
 (task-options! pom {:project 'fixme/status-bot
-                    :version "0.1.0-SNAPSHOT"
+                    :version "0.1.1-SNAPSHOT"
                     :description "The FIXME Hackerspace's status bot"}
                aot {:namespace #{'fixme.status-bot.core}}
                jar {:main 'fixme.status-bot.core})
