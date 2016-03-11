@@ -5,10 +5,15 @@
              :refer [defaction
                      make-bot
                      make-envelope
-                     stop-all! start-all!]]
+                     stop-all! start-all!
+                     say-to]]
             [clojure.java.shell :refer [sh]])
   (:import [dgellow.bottle.bot SlackAdapter])
   (:gen-class))
+
+;; Bot entity
+(def bot
+  (atom nil))
 
 ;; Actions
 (defaction hello-action
@@ -38,37 +43,45 @@
         (format "\n[Exit code] %s\n[Output]\n%s\n[Error]\n%s"
                 exit out err)}))))
 
-(defrecord Service [service ok?])
+(defrecord Service [label command])
 
 (defn make-pingservice [label domain-or-ip]
-  (Service. label (= 0 (:exit (sh "ping" "-c" "3" domain-or-ip)))))
+  (Service. label (list "ping" "-c" "3" domain-or-ip)))
 
 (defn make-webservice [url]
-  (Service. url (= 0 (:exit (sh "curl" url)))))
+  (Service. url (list "curl" url)))
 
-(defaction status-foo-action
-  "Gives status of services on foo.fixme.ch"
-  #"status"
-  (fn [_ _]
-    (let [pingservices (map (fn [x] (apply make-pingservice x))
-                         (partition 2 ["ping router (62.220.131.170)" "62.220.131.170"
-                                       "ping foo.fixme.ch" "foo.fixme.ch"]))
-          webservices (map make-webservice
+(def foo-pingservices (map (fn [x] (apply make-pingservice x))
+                    (partition 2 ["ping foo.fixme.ch" "foo.fixme.ch"])))
+
+(def foo-webservices (map make-webservice
                         ["http://foo.fixme.ch"
                          "https://foo.fixme.ch"
                          "https://git.fixme.ch"
                          "https://pad.fixme.ch"
                          "https://wiki.fixme.ch"
                          "https://trigger.fixme.ch"
-                         "https://mpd.fixme.ch"])
-          services (concat pingservices webservices)]
-      (make-envelope
-       {:message
-        (apply str "Services status:\n"
-          (map #(format "%s\t%s\n"
-                        (if (:ok? %) ":white_check_mark:" ":x:")
-                        (:service %))
-            services))}))))
+                         "https://mpd.fixme.ch"]))
+
+(def foo-services (concat foo-pingservices foo-webservices))
+
+(defn check-services [services]
+  (map (fn [x] (assoc x :ok? (= 0 (:exit (apply sh (:command x))))))
+    foo-services))
+
+(defn format-status-foo [checked-services]
+  (apply str "Services status:\n"
+    (map #(format "%s\t%s\n"
+                  (if (:ok? %) ":white_check_mark:" ":x:")
+                  (:label %))
+      checked-services)))
+
+(defaction status-foo-action
+  "Gives status of services on foo.fixme.ch"
+  #"status"
+  (fn [_ _]
+    (make-envelope
+     {:message (format-status-foo (check-services foo-services))})))
 
 (defaction help-action
   "Display help"
@@ -81,6 +94,23 @@
                "\n"
                (map #(format "- \"%s\": %s" (:pattern %)
                              (:doc (meta %))) (:actions bot))))})))
+
+;; Watches
+(defn set-interval [callback ms]
+  (future (while true (do (Thread/sleep ms) (callback)))))
+
+(def watch-foo-status
+  (set-interval
+   (fn []
+     (let [result (check-services foo-services)]
+       (when (not-every? :ok? result)
+         (doseq [[_ adapter] (:adapters @bot)]
+           (say-to adapter
+                   {:room "10_monitoring"
+                    :message (format-status-foo result)})))))
+   ;; run every 5 minutes
+   (* 5 60 1000)))
+
 
 ;; Bot definition
 (def bot-spec
@@ -95,10 +125,9 @@
                :adapters [(SlackAdapter. slack-token)]})))
 
 ;; Entry points
-(def bot
-  (atom nil))
 (defn stop-bot! []
   (timbre/info "Stopping bot...")
+  (future-cancel watch-foo-status)
   (stop-all! @bot)
   (reset! bot nil))
 (defn start-bot! []
