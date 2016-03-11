@@ -1,7 +1,8 @@
 (ns fixme.status-bot.core
   (:require [taoensso.timbre :as timbre]
             [environ.core :refer [env]]
-            [dgellow.bottle.bot :refer [defaction make-bot close-all! run-all!]]
+            [dgellow.bottle.bot :refer [defaction make-bot
+                                        stop-all! start-all!]]
             [clojure.java.shell :refer [sh]])
   (:import [dgellow.bottle.bot SlackAdapter])
   (:gen-class))
@@ -88,7 +89,7 @@
   (atom nil))
 (defn stop-bot! []
   (timbre/info "Stopping bot...")
-  (close-all! @bot)
+  (stop-all! @bot)
   (reset! bot nil))
 (defn start-bot! []
   (when @bot
@@ -96,7 +97,7 @@
   (timbre/info "Starting bot...")
   (reset! bot bot-spec)
   (when @bot
-    (run-all! @bot)))
+    (start-all! @bot)))
 
 (defn -main [& args]
   (start-bot!))
